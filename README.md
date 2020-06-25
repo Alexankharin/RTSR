@@ -25,6 +25,11 @@ pip install opencv-python
 
 Linux only:
 pip install mss
-Windows oonly:
+Windows only:
+
+
+pip install win32gui
+
+
 pip install d3dshot
 
