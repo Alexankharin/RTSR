@@ -28,8 +28,5 @@ pip install mss
 Windows only:
 
 
-pip install win32gui
-
-
 pip install d3dshot
 
