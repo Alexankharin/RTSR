@@ -1,5 +1,8 @@
 # RTSR
 Real-time superresolution
+
+Thanks to https://github.com/krasserm/super-resolution , whose code was used during development!
+
 Here is the script for real-time superresolution ising RTSR convolutional network
 Requirements 
 
