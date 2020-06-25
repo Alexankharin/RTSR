@@ -22,6 +22,7 @@ should work.
 
 Other libraries can be installed using pip:
 pip install opencv-python
+pip install h5py
 
 Linux only:
 pip install mss
