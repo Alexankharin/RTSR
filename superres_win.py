@@ -27,7 +27,7 @@ while True:
     starttime=time.time()
     screen=d.screenshot(region=(dimensions[0]//8*8+shiftzero[0],dimensions[1]//8*8+shiftzero[1],dimensions[2]//8*8+shiftzero[0]+windowsize[0],dimensions[3]//8*8+shiftzero[1]+windowsize[1]))
     imageinit=screen[:,:,:3][:,:,::-1]
-    img2 = np.array(Image.fromarray(imageinit).resize((imageinit.shape[1]//pixels[1],imageinit.shape[0]//pixels[0]),Image.NEAREST))
+    img2 = np.array(Image.fromarray(imageinit).resize((imageinit.shape[1]//pixels[1],imageinit.shape[0]//pixels[0])))
     if enhance==False:
         img3=np.array(Image.fromarray(imageinit).resize((imageinit.shape[1]*4//pixels[1],imageinit.shape[0]*4//pixels[0]),Image.NEAREST))
     if enhance==True:
