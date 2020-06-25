@@ -31,3 +31,5 @@ Windows only:
 
 pip install d3dshot
 
+
+After start script will show 640x480 capture region. Use WSAD keys to adjast capture position and IJKL keys for capture region size change. Key Q closes the program. Key 0 starts superresolution mode. Keys 1-2 change capture parameters ( 2 is deafalt mode for most of DOS games (see https://www.dosgamers.com/dos/dosbox-dos-emulator/screen-resolution), 1 is full pixel mode)
