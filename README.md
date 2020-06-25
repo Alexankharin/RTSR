@@ -17,6 +17,8 @@ If it doesn’t work out due to conflicts, then
 
 
 conda install cudnn
+
+
 pip install tensorflow-gpu
 
 
