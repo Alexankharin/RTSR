@@ -17,28 +17,38 @@ If it doesn’t work out due to conflicts, then
 
 <code>
 conda install cudnn
+  
 pip install tensorflow-gpu
 </code>
+
 should work.
 
 
 Other libraries can be installed using pip:
 <code>
 pip install opencv-python
+  
 pip install h5py
+
 pip install mss
+
 </code>
 For windows OS:
 
 <code>
 pip install pywin32
 </code>
+
 For linux OS:
+
 <code>
 pip install python-xlib
 </code>
+
 Start script with
+
 <code>
 python superres.py
 </code>
+
 After start script will give yor 7 seconds to make window with game active. After window capturing, use WSAD keys to adjast capture position and IJKL keys for capture region size change. Key Q closes the program. Key 0 starts superresolution mode. Keys 1-2 change capture parameters ( 2 is deafalt mode for most of DOS games (see https://www.dosgamers.com/dos/dosbox-dos-emulator/screen-resolution), 1 is full pixel mode)
