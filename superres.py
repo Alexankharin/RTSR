@@ -7,16 +7,13 @@ import time
 import platform
 if platform.system()=='Windows':  
     from win32 import win32gui
-    from win32api import GetSystemMetrics
+    from ctypes import windll
+    import win32ui    
 else:
     from Xlib.display import Display
     disp = Display()
     root = disp.screen().root
     def get_absolute_geometry(win):
-        """
-        Returns the (x, y, height, width) of a window relative to the top-left
-        of the screen.
-        """
         geom = win.get_geometry()
         (x, y) = (geom.x, geom.y)
         w,h=(geom.width, geom.height)
@@ -32,9 +29,43 @@ else:
             h=pgeom.height
             win = parent
         return (x, y, w+x, h+y)
+
+def getbackgroundwindowimage(hwnd, sx, sy):
+    left, top, right, bot = win32gui.GetWindowRect(hwnd)
+    w = right - left
+    h = bot - top
+    hwndDC = win32gui.GetWindowDC(hwnd)
+    mfcDC  = win32ui.CreateDCFromHandle(hwndDC)
+    saveDC = mfcDC.CreateCompatibleDC()
+
+    saveBitMap = win32ui.CreateBitmap()
+    saveBitMap.CreateCompatibleBitmap(mfcDC, w-sx, h-sy)
+
+    saveDC.SelectObject(saveBitMap)
+
+    # Change the line below depending on whether you want the whole window
+    # or just the client area. 
+    result = windll.user32.PrintWindow(hwnd, saveDC.GetSafeHdc(), 1)
+    #result = windll.user32.PrintWindow(hwnd, saveDC.GetSafeHdc(), 0)
+    bmpinfo = saveBitMap.GetInfo()
+    bmpstr = saveBitMap.GetBitmapBits(True)
+    im = Image.frombuffer(
+        'RGB',
+        (bmpinfo['bmWidth'], bmpinfo['bmHeight']),
+        bmpstr, 'raw', 'BGRX', 0, 1)
+    win32gui.DeleteObject(saveBitMap.GetHandle())
+    saveDC.DeleteDC()
+    mfcDC.DeleteDC()
+    win32gui.ReleaseDC(hwnd, hwndDC)
+    return im
+
     
 tf.keras.backend.set_floatx('float16')
 rgb_mean = np.array([0.4488, 0.4371, 0.4040]) * 255
+
+
+
+
 def normalize(x, rgb_mean=rgb_mean):
     return (x - rgb_mean) / 127.5
 def denormalize(x, rgb_mean=rgb_mean):
@@ -60,10 +91,10 @@ rtsrm=tf.keras.models.clone_model(rtsrn)
 rtsrm.load_weights('RTSR_MEDIAN.h5')
 inp=rtsrn.input
 out=tf.keras.backend.clip(rtsrn.output, 0, 255)
-myclippededsrn=tf.keras.models.Model(inputs=inp, outputs=out)
+myclippededsrn=tf.keras.models.Model(inputs=inp, outputs=tf.cast(out, tf.uint8))
 inp=rtsrm.input
 out=tf.keras.backend.clip(rtsrm.output, 0, 255)
-myclippededsrm=tf.keras.models.Model(inputs=inp, outputs=out)
+myclippededsrm=tf.keras.models.Model(inputs=inp, outputs=tf.cast(out, tf.uint8))
 for i in range(7,0,-1):
     time.sleep(1)
     print ('make Game Window active for capturing, {} s. remains'.format(i))
@@ -79,7 +110,6 @@ FPS=10.0
 enhance=False
 sct=mss()
 resizemode=0
-#displaydims=(GetSystemMetrics(0),GetSystemMetrics(1))
 while True:
     starttime=time.time()
     if platform.system()=='Windows':  
@@ -87,8 +117,9 @@ while True:
     else:
         dimensions=get_absolute_geometry(hwnd)
     region=(dimensions[0]//8*8+shiftzero[0],dimensions[1]//8*8+shiftzero[1]+32,dimensions[2]//8*8+shiftzero[0]+windowsize[0],dimensions[3]//8*8+shiftzero[1]+windowsize[1]+32)
-    screen=sct.grab(region)
-    imageinit=np.array(screen).copy()[:,:,:3]
+    screen=getbackgroundwindowimage(hwnd, shiftzero[0], shiftzero[1])
+    #screen=sct.grab(region)
+    imageinit=np.array(screen).copy()[:,:,::-1]
     #if (pixels[1]==2):
     if enhance==0:
         img3=np.array(Image.fromarray(imageinit).resize((imageinit.shape[1]*4//pixels[1],imageinit.shape[0]*4//pixels[0]),Image.NEAREST))
@@ -98,7 +129,7 @@ while True:
     if enhance==2:
         img2 = np.array(Image.fromarray(imageinit).resize((imageinit.shape[1]//pixels[1],imageinit.shape[0]//pixels[0]),Image.NEAREST))
         img3=myclippededsrn.predict(np.expand_dims(img2, 0))[0]
-    img4=img3.astype(np.uint8)
+    img4=img3#.astype(np.uint8)
     #if resizemode==1:
     #    img5 = np.array(Image.fromarray(img4).resize((displaydims[0]-50,displaydims[1]-50)))
     if resizemode==0:
