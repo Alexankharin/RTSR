@@ -79,7 +79,7 @@ FPS=10.0
 enhance=False
 sct=mss()
 resizemode=0
-displaydims=(GetSystemMetrics(0),GetSystemMetrics(1))
+#displaydims=(GetSystemMetrics(0),GetSystemMetrics(1))
 while True:
     starttime=time.time()
     if platform.system()=='Windows':  
