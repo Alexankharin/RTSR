@@ -114,12 +114,14 @@ while True:
     starttime=time.time()
     if platform.system()=='Windows':  
         dimensions = win32gui.GetWindowRect(hwnd)
+        #region=(dimensions[0]//8*8+shiftzero[0],dimensions[1]//8*8+shiftzero[1]+32,dimensions[2]//8*8+shiftzero[0]+windowsize[0],dimensions[3]//8*8+shiftzero[1]+windowsize[1]+32)
+        screen=getbackgroundwindowimage(hwnd, shiftzero[0], shiftzero[1])
+        imageinit=np.array(screen).copy()[:,:,::-1]
     else:
         dimensions=get_absolute_geometry(hwnd)
-    region=(dimensions[0]//8*8+shiftzero[0],dimensions[1]//8*8+shiftzero[1]+32,dimensions[2]//8*8+shiftzero[0]+windowsize[0],dimensions[3]//8*8+shiftzero[1]+windowsize[1]+32)
-    screen=getbackgroundwindowimage(hwnd, shiftzero[0], shiftzero[1])
-    #screen=sct.grab(region)
-    imageinit=np.array(screen).copy()[:,:,::-1]
+        region=(dimensions[0]//8*8+shiftzero[0],dimensions[1]//8*8+shiftzero[1]+32,dimensions[2]//8*8+shiftzero[0]+windowsize[0],dimensions[3]//8*8+shiftzero[1]+windowsize[1]+32)
+        screen=sct.grab(region)
+        imageinit=np.array(screen).copy()[:,:,:3]    
     #if (pixels[1]==2):
     if enhance==0:
         img3=np.array(Image.fromarray(imageinit).resize((imageinit.shape[1]*4//pixels[1],imageinit.shape[0]*4//pixels[0]),Image.NEAREST))
